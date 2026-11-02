@@ -15,7 +15,7 @@ function tampilkan_halaman($judul_halaman, $konten_halaman) {
     <!-- NAVBAR / HEADER -->
     <header>
         <div class="logo">
-            <h2>Perpustakaan Digital</h2>
+            <h2>Perpustakaan</h2>
         </div>
         <nav>
             <ul>
