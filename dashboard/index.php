@@ -1,11 +1,9 @@
 <?php
-// DASHBOARD: ringkasan jumlah data + 5 peminjaman terbaru
 require_once __DIR__ . '/fungsi.php';
 $judul = 'Dashboard';
 $aktif = 'dashboard';
 include __DIR__ . '/header.php';
 
-// Fungsi kecil untuk menghitung hasil query COUNT/SUM
 function hitung($sql) { return one($sql)['n'] ?? 0; }
 
 $kartu = [

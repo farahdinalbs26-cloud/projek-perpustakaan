@@ -1,8 +1,6 @@
 <?php
-// HEADER: bagian atas semua halaman (navbar). Dipanggil oleh setiap halaman dengan include.
-// Sebelum include, halaman mengisi $judul (judul tab) dan $aktif (menu yang menyala).
 require_once __DIR__ . '/fungsi.php';
-syncTerlambat();   // peminjaman yang lewat batas otomatis jadi "Terlambat"
+syncTerlambat();   
 $judul = $judul ?? 'Perpustakaan';
 $aktif = $aktif ?? '';
 ?>
@@ -12,7 +10,7 @@ $aktif = $aktif ?? '';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($judul) ?> - Perpustakaan</title>
-  <link rel="stylesheet" href="../dashboard/style.css">
+  <link rel="stylesheet" href="/projek-perpustakaan/dashboard/style.css">
 </head>
 <body>
 
