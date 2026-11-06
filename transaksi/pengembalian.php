@@ -14,7 +14,7 @@ $pengembalian = all($sql);
 ?>
 
 <div class="head">
-  <h1>Data Pengembalian & Denda</h1>
+  
   <a href="tambah_pengembalian.php" class="btn ok">+ Input Pengembalian</a>
 </div>
 

@@ -20,8 +20,7 @@ $kartu = [
   ['Total Denda',      rp(hitung("SELECT COALESCE(SUM(jumlah_denda),0) n FROM pengembalian")), 'red'],
 ];
 
-$terbaru = all("SELECT p.*, a.nama_anggota FROM peminjaman p
-                JOIN anggota a ON a.NIM = p.NIM ORDER BY p.no_peminjaman DESC LIMIT 5");
+$terbaru = all("SELECT p.*, a.nama_anggota FROM peminjaman p JOIN anggota a ON a.NIM = p.NIM ORDER BY p.no_peminjaman ASC");
 ?>
 
 <div class="head"><h1>Dashboard</h1></div>
