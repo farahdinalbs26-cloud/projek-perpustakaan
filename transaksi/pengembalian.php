@@ -1,68 +1,55 @@
 <?php
-include "../connect.php";
+require_once '../dashboard/fungsi.php';
+$judul = 'Pengembalian Buku';
+$aktif = 'pengembalian';
+include '../dashboard/header.php';
+
+$sql = "SELECT k.*, p.NIM, p.tgl_peminjaman, p.batas_pengembalian, a.nama_anggota
+        FROM pengembalian k
+        JOIN peminjaman p ON p.no_peminjaman = k.no_peminjaman
+        JOIN anggota a ON a.NIM = p.NIM
+        ORDER BY k.no_pengembalian DESC";
+
+$pengembalian = all($sql);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Data Pengembalian</title>
-</head>
+<div class="head">
+  <h1>Data Pengembalian & Denda</h1>
+  <a href="tambah_pengembalian.php" class="btn ok">+ Input Pengembalian</a>
+</div>
 
-<body>
+<input type="text" id="cari" class="cari" placeholder="Cari riwayat pengembalian...">
 
-<h2>Data Pengembalian</h2>
-
-<a href="tambah_pengembalian.php">Tambah Pengembalian</a>
-
-<br><br>
-
-<table border="1" cellpadding="10" cellspacing="0">
-
-<tr>
-    <th>No Pengembalian</th>
-    <th>No Peminjaman</th>
-    <th>Tanggal Pengembalian</th>
-    <th>Jumlah Denda</th>
-    <th>Kondisi Buku</th>
-    <th>Aksi</th>
-</tr>
-
-<?php
-
-$sql = "SELECT * FROM pengembalian ORDER BY no_pengembalian DESC";
-$result = mysqli_query($conn, $sql);
-
-if (!$result) {
-    die("Query gagal: " . mysqli_error($conn));
-}
-
-while ($data = mysqli_fetch_assoc($result)) {
-?>
-
-<tr>
-    <td><?= $data['no_pengembalian']; ?></td>
-    <td><?= $data['no_peminjaman']; ?></td>
-    <td><?= $data['tgl_pengembalian']; ?></td>
-    <td>Rp <?= number_format($data['jumlah_denda'], 0, ',', '.'); ?></td>
-    <td><?= $data['kondisi_buku']; ?></td>
-
-    <td>
-        <a href="hapus_pengembalian.php?no_pengembalian=<?= $data['no_pengembalian']; ?>"
-           onclick="return confirm('Yakin ingin menghapus data pengembalian ini?')">
-            Hapus
-        </a>
-    </td>
-</tr>
-
-<?php
-}
-?>
-
+<table class="data">
+  <thead>
+    <tr>
+      <th>No Pengembalian</th>
+      <th>No Pinjam</th>
+      <th>Anggota</th>
+      <th>Tgl Kembali</th>
+      <th>Kondisi Buku</th>
+      <th>Denda Dibayar</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php foreach ($pengembalian as $r): ?>
+    <tr>
+      <td><b><?= e($r['no_pengembalian']) ?></b></td>
+      <td><?= e($r['no_peminjaman']) ?></td>
+      <td><?= e($r['nama_anggota']) ?></td>
+      <td><?= tgl($r['tgl_pengembalian']) ?></td>
+      <td><?= e($r['kondisi_buku']) ?></td>
+      <td><b style="color:var(--merah);"><?= rp($r['jumlah_denda']) ?></b></td>
+      <td>
+        <a href="hapus_pengembalian.php?id=<?= urlencode($r['no_pengembalian']) ?>" class="btn sm danger" data-confirm="Hapus riwayat pengembalian ini?">Hapus</a>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  <?php if (!$pengembalian): ?>
+    <tr><td colspan="7">Belum ada data pengembalian.</td></tr>
+  <?php endif; ?>
+  </tbody>
 </table>
 
-<br>
-
-<a href="../index.php">Kembali ke Dashboard</a>
-
-</body>
-</html>
+<?php include '../dashboard/footer.php'; ?>

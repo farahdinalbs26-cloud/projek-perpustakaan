@@ -1,146 +1,58 @@
 <?php
-include "../connect.php";
+require_once '../dashboard/fungsi.php';
+$judul = 'Input Pengembalian';
+$aktif = 'pengembalian';
+
+$selectedNo = $_GET['no'] ?? '';
+
+// Ambil Peminjaman Yang Belum Selesai
+$peminjamanBelum = all("SELECT p.*, a.nama_anggota 
+                        FROM peminjaman p 
+                        JOIN anggota a ON a.NIM = p.NIM 
+                        WHERE p.status_peminjaman != 'Selesai' 
+                        ORDER BY p.no_peminjaman DESC");
+
+include '../dashboard/header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tambah Pengembalian</title>
+<div class="head"><h1>Form Pengembalian Buku</h1></div>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+<form method="post" action="proses_pengembalian.php" id="form-kembali" class="box" 
+      data-perhari="<?= DENDA_PER_HARI ?>" 
+      data-kondisi='<?= json_encode(DENDA_KONDISI) ?>'>
 
-        h2 {
-            font-size: 25px;
-            margin-bottom: 25px;
-        }
+  <label>No Pengembalian</label>
+  <input type="text" name="no_pengembalian" value="<?= e(kodeBaru('pengembalian', 'no_pengembalian', 'KB')) ?>" readonly style="background:#eee;">
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
+  <label>Pilih Transaksi Peminjaman</label>
+  <select name="no_peminjaman" required>
+    <option value="">-- Pilih Transaksi Peminjaman --</option>
+    <?php foreach ($peminjamanBelum as $p): ?>
+      <option value="<?= e($p['no_peminjaman']) ?>" 
+              data-batas="<?= e($p['batas_pengembalian']) ?>"
+              <?= ($selectedNo == $p['no_peminjaman']) ? 'selected' : '' ?>>
+        <?= e($p['no_peminjaman']) ?> - <?= e($p['nama_anggota']) ?> (Batas: <?= tgl($p['batas_pengembalian']) ?>)
+      </option>
+    <?php endforeach; ?>
+  </select>
 
-        input,
-        select {
-            width: 400px;
-            padding: 10px;
-            border: 1px solid #aaa;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
+  <label>Tanggal Pengembalian</label>
+  <input type="date" name="tgl_pengembalian" value="<?= date('Y-m-d') ?>" required>
 
-        select {
-            background-color: white;
-        }
+  <label>Kondisi Buku DitERIMA</label>
+  <select name="kondisi_buku" required>
+    <option value="Baik">Baik (Denda Kondisi: Rp 0)</option>
+    <option value="Rusak">Rusak (Denda Kondisi: <?= rp(DENDA_KONDISI['Rusak']) ?>)</option>
+    <option value="Hilang">Hilang (Denda Kondisi: <?= rp(DENDA_KONDISI['Hilang']) ?>)</option>
+  </select>
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+  <label>Perkiraan Total Denda (Otomatis Hitung):</label>
+  <div id="preview" class="preview">Rp 0</div>
 
-        button {
-            background-color: #198754;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-
-        button:hover {
-            background-color: #157347;
-        }
-
-        .kembali {
-            display: inline-block;
-            margin-top: 20px;
-            color: #6f42c1;
-            text-decoration: underline;
-        }
-    </style>
-</head>
-
-<body>
-
-<h2>Tambah Pengembalian</h2>
-
-<form action="proses_pengembalian.php" method="POST">
-
-    <div class="form-group">
-        <label>No Pengembalian</label>
-
-        <input type="text"
-               name="no_pengembalian"
-               placeholder="Contoh: PB01"
-               required>
-    </div>
-
-    <div class="form-group">
-        <label>No Peminjaman</label>
-
-        <select name="no_peminjaman" required>
-
-            <option value="">-- Pilih No Peminjaman --</option>
-
-            <?php
-
-            $sql = "SELECT no_peminjaman, NIM
-                    FROM peminjaman
-                    WHERE status_peminjaman = 'Dipinjam'
-                    ORDER BY no_peminjaman ASC";
-
-            $result = mysqli_query($conn, $sql);
-
-            while ($data = mysqli_fetch_assoc($result)) {
-            ?>
-
-                <option value="<?= $data['no_peminjaman']; ?>">
-                    <?= $data['no_peminjaman']; ?> - <?= $data['NIM']; ?>
-                </option>
-
-            <?php
-            }
-            ?>
-
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Tanggal Pengembalian</label>
-
-        <input type="date"
-               name="tgl_pengembalian"
-               value="<?= date('Y-m-d'); ?>"
-               required>
-    </div>
-
-    <div class="form-group">
-        <label>Kondisi Buku</label>
-
-        <select name="kondisi_buku" required>
-
-            <option value="">-- Pilih Kondisi Buku --</option>
-            <option value="Baik">Baik</option>
-            <option value="Rusak">Rusak</option>
-            <option value="Hilang">Hilang</option>
-
-        </select>
-    </div>
-
-    <button type="submit" name="simpan">
-        Simpan Pengembalian
-    </button>
-
+  <div class="actions">
+    <button type="submit" class="btn ok">Proses Pengembalian</button>
+    <a href="pengembalian.php" class="btn alt">Batal</a>
+  </div>
 </form>
 
-<a href="pengembalian.php" class="kembali">
-    ← Kembali
-</a>
-
-</body>
-</html>
+<?php include '../dashboard/footer.php'; ?>

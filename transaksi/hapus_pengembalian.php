@@ -1,31 +1,15 @@
 <?php
+require_once '../dashboard/fungsi.php';
+$id = $_GET['id'] ?? '';
 
-include "../connect.php";
-
-if (isset($_GET['no_pengembalian'])) {
-
-    $no_pengembalian = $_GET['no_pengembalian'];
-
-    $sql = "DELETE FROM pengembalian
-            WHERE no_pengembalian = '$no_pengembalian'";
-
-    if (mysqli_query($conn, $sql)) {
-
-        echo "<script>
-                alert('Data pengembalian berhasil dihapus!');
-                window.location='pengembalian.php';
-              </script>";
-
-    } else {
-
-        echo "Data gagal dihapus: " . mysqli_error($conn);
-
-    }
-
+if ($id) {
+  $kembali = one("SELECT no_peminjaman FROM pengembalian WHERE no_pengembalian = ?", 's', $id);
+  if ($kembali) {
+    // Kembalikan status peminjaman jadi Dipinjam
+    q("UPDATE peminjaman SET status_peminjaman = 'Dipinjam' WHERE no_peminjaman = ?", 's', $kembali['no_peminjaman']);
+    q("DELETE FROM pengembalian WHERE no_pengembalian = ?", 's', $id);
+  }
+  redirect('pengembalian.php', 'Data pengembalian berhasil dihapus.');
 } else {
-
-    header("Location: pengembalian.php");
-    exit();
-
+  redirect('pengembalian.php');
 }
-?>

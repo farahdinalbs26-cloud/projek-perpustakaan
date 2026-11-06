@@ -1,64 +1,63 @@
 <?php
-include "../connect.php";
+require_once '../dashboard/fungsi.php';
+$judul = 'Peminjaman Buku';
+$aktif = 'peminjaman';
+include '../dashboard/header.php';
+
+$sql = "SELECT p.*, a.nama_anggota, 
+               GROUP_CONCAT(b.judul_buku SEPARATOR ', ') AS daftar_buku
+        FROM peminjaman p
+        JOIN anggota a ON a.NIM = p.NIM
+        LEFT JOIN detail_peminjaman dp ON dp.no_peminjaman = p.no_peminjaman
+        LEFT JOIN buku b ON b.no_buku = dp.no_buku
+        GROUP BY p.no_peminjaman
+        ORDER BY p.no_peminjaman DESC";
+
+$peminjaman = all($sql);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Data Peminjaman</title>
-</head>
+<div class="head">
+  <h1>Data Peminjaman</h1>
+  <a href="tambah_peminjaman.php" class="btn ok">+ Catat Peminjaman</a>
+</div>
 
-<body>
+<input type="text" id="cari" class="cari" placeholder="Cari peminjaman...">
 
-<h2>Data Peminjaman</h2>
-
-<a href="tambah_peminjaman.php">Tambah Peminjaman</a>
-
-<br><br>
-
-<table border="1" cellpadding="10" cellspacing="0">
-
-<tr>
-    <th>No Peminjaman</th>
-    <th>NIM</th>
-    <th>Tanggal Peminjaman</th>
-    <th>Batas Pengembalian</th>
-    <th>Status Peminjaman</th>
-    <th>Aksi</th>
-</tr>
-
-<?php
-
-$sql = "SELECT * FROM peminjaman ORDER BY no_peminjaman DESC";
-$result = mysqli_query($conn, $sql);
-
-while ($data = mysqli_fetch_assoc($result)) {
-?>
-
-<tr>
-    <td><?= $data['no_peminjaman']; ?></td>
-    <td><?= $data['NIM']; ?></td>
-    <td><?= $data['tgl_peminjaman']; ?></td>
-    <td><?= $data['batas_pengembalian']; ?></td>
-    <td><?= $data['status_peminjaman']; ?></td>
-
-    <td>
-        <a href="hapus_peminjaman.php?no_peminjaman=<?= $data['no_peminjaman']; ?>"
-           onclick="return confirm('Yakin ingin menghapus data ini?')">
-            Hapus
-        </a>
-    </td>
-</tr>
-
-<?php
-}
-?>
-
+<table class="data">
+  <thead>
+    <tr>
+      <th>No Transaksi</th>
+      <th>Anggota</th>
+      <th>Buku Dipinjam</th>
+      <th>Tgl Pinjam</th>
+      <th>Batas Kembali</th>
+      <th>Status</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php foreach ($peminjaman as $r): ?>
+    <tr>
+      <td><b><?= e($r['no_peminjaman']) ?></b></td>
+      <td><?= e($r['nama_anggota']) ?> (<?= e($r['NIM']) ?>)</td>
+      <td><?= e($r['daftar_buku'] ?? '-') ?></td>
+      <td><?= tgl($r['tgl_peminjaman']) ?></td>
+      <td><?= tgl($r['batas_pengembalian']) ?></td>
+      <td><?= badge($r['status_peminjaman']) ?></td>
+      <td>
+        <?php if ($r['status_peminjaman'] != 'Selesai'): ?>
+          <a href="tambah_pengembalian.php?no=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm ok">Kembalikan</a>
+        <?php else: ?>
+          <span class="small" style="color:var(--hijau);">Sudah Kembali</span>
+        <?php endif; ?>
+        <a href="hapus_peminjaman.php?id=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm danger" data-confirm="Hapus transaksi ini beserta detailnya?">Hapus</a>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  <?php if (!$peminjaman): ?>
+    <tr><td colspan="7">Belum ada transaksi peminjaman.</td></tr>
+  <?php endif; ?>
+  </tbody>
 </table>
 
-<br>
-
-<a href="../index.php">Kembali ke Dashboard</a>
-
-</body>
-</html>
+<?php include '../dashboard/footer.php'; ?>

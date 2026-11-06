@@ -1,94 +1,36 @@
 <?php
-include "../connect.php";
+require_once '../dashboard/fungsi.php';
 
-if (isset($_POST['simpan'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $noKembali  = trim($_POST['no_pengembalian'] ?? '');
+  $noPinjam   = trim($_POST['no_peminjaman'] ?? '');
+  $tglKembali = $_POST['tgl_pengembalian'] ?? date('Y-m-d');
+  $kondisi    = $_POST['kondisi_buku'] ?? 'Baik';
 
-    $no_pengembalian = $_POST['no_pengembalian'];
-    $no_peminjaman = $_POST['no_peminjaman'];
-    $tgl_pengembalian = $_POST['tgl_pengembalian'];
-    $kondisi_buku = $_POST['kondisi_buku'];
+  $pinjam = one("SELECT * FROM peminjaman WHERE no_peminjaman = ?", 's', $noPinjam);
 
-    // Ambil batas pengembalian
-    $sql = "SELECT batas_pengembalian
-            FROM peminjaman
-            WHERE no_peminjaman = '$no_peminjaman'";
+  if ($pinjam) {
+    // Hitung total denda (Terlambat + Kondisi Buku)
+    $hitung = hitungDenda($pinjam['batas_pengembalian'], $tglKembali, $kondisi);
+    $dendaFinal = $hitung['denda'];
 
-    $result = mysqli_query($conn, $sql);
+    // 1. Simpan Ke Tabel Pengembalian
+    q("INSERT INTO pengembalian (no_pengembalian, no_peminjaman, tgl_pengembalian, jumlah_denda, kondisi_buku) 
+       VALUES (?, ?, ?, ?, ?)", 'sssds', $noKembali, $noPinjam, $tglKembali, $dendaFinal, $kondisi);
 
-    if (!$result) {
-        die("Query gagal: " . mysqli_error($conn));
+    // 2. Update Status Peminjaman Menjadi 'Selesai'
+    q("UPDATE peminjaman SET status_peminjaman = 'Selesai' WHERE no_peminjaman = ?", 's', $noPinjam);
+
+    // 3. Kembalikan Stok Buku
+    $detail = all("SELECT no_buku FROM detail_peminjaman WHERE no_peminjaman = ?", 's', $noPinjam);
+    foreach ($detail as $d) {
+      q("UPDATE buku SET stok_buku = stok_buku + 1 WHERE no_buku = ?", 's', $d['no_buku']);
     }
 
-    $data = mysqli_fetch_assoc($result);
-
-    if (!$data) {
-        die("Data peminjaman tidak ditemukan.");
-    }
-
-    // Hitung denda
-    $batas = new DateTime($data['batas_pengembalian']);
-    $tanggal_kembali = new DateTime($tgl_pengembalian);
-
-    $denda = 0;
-
-    if ($tanggal_kembali > $batas) {
-
-        $selisih = $batas->diff($tanggal_kembali);
-
-        $jumlah_hari = $selisih->days;
-
-        // Denda Rp10.000 per hari
-        $denda = $jumlah_hari * 10000;
-    }
-
-    // Simpan ke tabel pengembalian
-    $sql = "INSERT INTO pengembalian
-            (
-                no_pengembalian,
-                no_peminjaman,
-                tgl_pengembalian,
-                jumlah_denda,
-                kondisi_buku
-            )
-            VALUES
-            (
-                '$no_pengembalian',
-                '$no_peminjaman',
-                '$tgl_pengembalian',
-                '$denda',
-                '$kondisi_buku'
-            )";
-
-    if (!mysqli_query($conn, $sql)) {
-        die("Gagal menyimpan pengembalian: " . mysqli_error($conn));
-    }
-
-    // Ubah status peminjaman
-    if ($denda > 0) {
-        $status = "Terlambat";
-    } else {
-        $status = "Selesai";
-    }
-
-    $sql = "UPDATE peminjaman
-            SET status_peminjaman = '$status'
-            WHERE no_peminjaman = '$no_peminjaman'";
-
-    if (!mysqli_query($conn, $sql)) {
-        die("Gagal mengubah status: " . mysqli_error($conn));
-    }
-
-    // Kembali ke halaman pengembalian
-    echo "<script>
-            alert('Pengembalian berhasil disimpan! Denda: Rp " . 
-            number_format($denda, 0, ',', '.') . "');
-            window.location='pengembalian.php';
-          </script>";
-
+    redirect('pengembalian.php', 'Pengembalian buku berhasil diproses!');
+  } else {
+    redirect('pengembalian.php', 'Data peminjaman tidak ditemukan!');
+  }
 } else {
-
-    header("Location: tambah_pengembalian.php");
-    exit();
-
+  redirect('pengembalian.php');
 }
-?>

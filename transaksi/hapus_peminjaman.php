@@ -1,31 +1,19 @@
 <?php
+require_once '../dashboard/fungsi.php';
+$id = $_GET['id'] ?? '';
 
-include "../connect.php";
+if ($id) {
+  // Kembalikan Stok Buku
+  $detail = all("SELECT no_buku FROM detail_peminjaman WHERE no_peminjaman = ?", 's', $id);
+  foreach ($detail as $d) {
+    q("UPDATE buku SET stok_buku = stok_buku + 1 WHERE no_buku = ?", 's', $d['no_buku']);
+  }
 
-if (isset($_GET['no_peminjaman'])) {
+  // Hapus detail dan peminjaman
+  q("DELETE FROM detail_peminjaman WHERE no_peminjaman = ?", 's', $id);
+  q("DELETE FROM peminjaman WHERE no_peminjaman = ?", 's', $id);
 
-    $no_peminjaman = $_GET['no_peminjaman'];
-
-    $sql = "DELETE FROM peminjaman
-            WHERE no_peminjaman = '$no_peminjaman'";
-
-    if (mysqli_query($conn, $sql)) {
-
-        echo "<script>
-                alert('Data peminjaman berhasil dihapus!');
-                window.location='peminjaman.php';
-              </script>";
-
-    } else {
-
-        echo "Data gagal dihapus: " . mysqli_error($conn);
-
-    }
-
+  redirect('peminjaman.php', 'Transaksi peminjaman berhasil dihapus.');
 } else {
-
-    header("Location: peminjaman.php");
-    exit();
-
+  redirect('peminjaman.php');
 }
-?>
