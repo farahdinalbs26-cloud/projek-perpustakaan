@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } else {
     q("INSERT INTO buku (no_buku, judul_buku, penulis, penerbit, th_terbit, ISBN, stok_buku, deskripsi_buku, no_kategori) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-       'ssssisis s', $no, $judulBuku, $penulis, $penerbit, $th, $isbn, $stok, $desk, $noKat);
+       'ssssisiss', $no, $judulBuku, $penulis, $penerbit, $th, $isbn, $stok, $desk, $noKat);
     redirect('buku.php', 'Buku berhasil ditambahkan!');
   }
 }
