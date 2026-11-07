@@ -1,5 +1,3 @@
-
-
 document.addEventListener('click', function (e) {
   var tombol = e.target.closest('[data-confirm]');
   if (tombol && !confirm(tombol.dataset.confirm)) e.preventDefault();

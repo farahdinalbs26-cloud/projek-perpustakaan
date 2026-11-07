@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/fungsi.php';
 syncTerlambat();   
-$judul = $judul ?? 'Perpustakaan';
-$aktif = $aktif ?? '';
+$judul =$judul ?? 'Perpustakaan';
+$aktif =$aktif ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -10,18 +10,22 @@ $aktif = $aktif ?? '';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($judul) ?> - Perpustakaan</title>
-  <link rel="stylesheet" href="/projek-perpustakaan/dashboard/style.css">
+  
+  <link rel="stylesheet" href="/projek-perpustakaan/dashboard/style.css?v=2.0">
 </head>
 <body>
 
 <nav class="nav">
-  <span class="brand">Perpustakaan</span>
-  <a href="../dashboard/index.php"      class="<?= $aktif == 'dashboard'    ? 'active' : '' ?>">Dashboard</a>
-  <a href="../buku/buku.php"            class="<?= $aktif == 'buku'         ? 'active' : '' ?>">Buku</a>
-  <a href="../buku/kategori.php"        class="<?= $aktif == 'kategori'     ? 'active' : '' ?>">Kategori</a>
-  <a href="../anggota/anggota.php"      class="<?= $aktif == 'anggota'      ? 'active' : '' ?>">Anggota</a>
-  <a href="../transaksi/peminjaman.php"   class="<?= $aktif == 'peminjaman'   ? 'active' : '' ?>">Peminjaman</a>
-  <a href="../transaksi/pengembalian.php" class="<?= $aktif == 'pengembalian' ? 'active' : '' ?>">Pengembalian</a>
+  <div class="brand">📚 Perpustakaan</div>
+  
+  <div class="nav-links">
+    <a href="../dashboard/index.php"       class="<?= $aktif == 'dashboard'    ? 'active' : '' ?>">Dashboard</a>
+    <a href="../buku/buku.php"            class="<?= $aktif == 'buku'         ? 'active' : '' ?>">Buku</a>
+    <a href="../buku/kategori.php"        class="<?= $aktif == 'kategori'     ? 'active' : '' ?>">Kategori</a>
+    <a href="../anggota/anggota.php"      class="<?= $aktif == 'anggota'      ? 'active' : '' ?>">Anggota</a>
+    <a href="../transaksi/peminjaman.php"   class="<?= $aktif == 'peminjaman'   ? 'active' : '' ?>">Peminjaman</a>
+    <a href="../transaksi/pengembalian.php" class="<?= $aktif == 'pengembalian' ? 'active' : '' ?>">Pengembalian</a>
+  </div>
 </nav>
 
 <main class="container">

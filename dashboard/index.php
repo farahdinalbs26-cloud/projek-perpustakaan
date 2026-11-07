@@ -7,7 +7,6 @@ include __DIR__ . '/header.php';
 function hitung($sql) { return one($sql)['n'] ?? 0; }
 
 $kartu = [
-  // [judul kartu, isi, warna]
   ['Total Anggota',    hitung("SELECT COUNT(*) n FROM anggota"), ''],
   ['Total Buku',       hitung("SELECT COUNT(*) n FROM buku"), 'green'],
   ['Total Kategori',   hitung("SELECT COUNT(*) n FROM kategori"), ''],
