@@ -42,8 +42,16 @@ $pengembalian = all($sql);
       <td><?= e($r['kondisi_buku']) ?></td>
       <td><b style="color:var(--merah);"><?= rp($r['jumlah_denda']) ?></b></td>
       <td>
-        <a href="hapus_pengembalian.php?id=<?= urlencode($r['no_pengembalian']) ?>" class="btn sm danger" data-confirm="Hapus riwayat pengembalian ini?">Hapus</a>
-      </td>
+  <a href="edit_pengembalian.php?id=<?= urlencode($r['no_pengembalian']) ?>" class="btn sm">
+    Edit
+  </a>
+
+  <a href="hapus_pengembalian.php?id=<?= urlencode($r['no_pengembalian']) ?>"
+     class="btn sm danger"
+     data-confirm="Hapus riwayat pengembalian ini?">
+    Hapus
+  </a>
+</td>
     </tr>
   <?php endforeach; ?>
   <?php if (!$pengembalian): ?>

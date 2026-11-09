@@ -45,13 +45,24 @@ $peminjaman = all($sql);
       <td><?= tgl($r['batas_pengembalian']) ?></td>
       <td><?= badge($r['status_peminjaman']) ?></td>
       <td>
-        <?php if ($r['status_peminjaman'] != 'Selesai'): ?>
-          <a href="tambah_pengembalian.php?no=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm ok">Kembalikan</a>
-        <?php else: ?>
-          <span class="small" style="color:var(--hijau);">Sudah Kembali</span>
-        <?php endif; ?>
-        <a href="hapus_peminjaman.php?id=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm danger" data-confirm="Hapus transaksi ini beserta detailnya?">Hapus</a>
-      </td>
+  <?php if ($r['status_peminjaman'] != 'Selesai'): ?>
+    <a href="tambah_pengembalian.php?no=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm ok">
+      Kembalikan
+    </a>
+  <?php else: ?>
+    <span class="small" style="color:var(--hijau);">Sudah Kembali</span>
+  <?php endif; ?>
+
+  <a href="edit_peminjaman.php?id=<?= urlencode($r['no_peminjaman']) ?>" class="btn sm">
+    Edit
+  </a>
+
+  <a href="hapus_peminjaman.php?id=<?= urlencode($r['no_peminjaman']) ?>"
+     class="btn sm danger"
+     data-confirm="Hapus transaksi ini beserta detailnya?">
+    Hapus
+  </a>
+</td>
     </tr>
   <?php endforeach; ?>
   <?php if (!$peminjaman): ?>

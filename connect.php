@@ -4,7 +4,7 @@ $user = "root";
 $pass = "";
 $db   = "perpustakaan";
 
-$conn = mysqli_connect($host, $user, $pass, $db, 8111);
+$conn = mysqli_connect($host, $user, $pass, $db);
 
 if (!$conn) {
     die("Koneksi gagal: " . mysqli_connect_error());
