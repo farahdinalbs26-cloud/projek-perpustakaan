@@ -1,5 +1,4 @@
 <?php
-// Fungsi bersama (dipakai semua modul). connect.php harus menyediakan variabel $conn (mysqli).
 require_once __DIR__ . '/../connect.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
@@ -35,7 +34,7 @@ function hitungDenda($batas, $kembali, $kondisi){
     $hari = hariTerlambat($batas, $kembali);
     return ['hari' => $hari, 'denda' => $hari * DENDA_PER_HARI + (DENDA_KONDISI[$kondisi] ?? 0)];
 }
-// Peminjaman yang melewati batas dan belum kembali otomatis berstatus "Terlambat"
+
 function syncTerlambat(){
     q("UPDATE peminjaman SET status_peminjaman='Terlambat' WHERE status_peminjaman='Dipinjam' AND batas_pengembalian < CURDATE()");
 }

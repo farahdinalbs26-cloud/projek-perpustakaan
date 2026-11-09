@@ -1,15 +1,12 @@
 <?php
-// DASHBOARD: ringkasan jumlah data + 5 peminjaman terbaru
 require_once __DIR__ . '/fungsi.php';
 $judul = 'Dashboard';
 $aktif = 'dashboard';
 include __DIR__ . '/header.php';
 
-// Fungsi kecil untuk menghitung hasil query COUNT/SUM
 function hitung($sql) { return one($sql)['n'] ?? 0; }
 
 $kartu = [
-  // [judul kartu, isi, warna]
   ['Total Anggota',    hitung("SELECT COUNT(*) n FROM anggota"), ''],
   ['Total Buku',       hitung("SELECT COUNT(*) n FROM buku"), 'green'],
   ['Total Kategori',   hitung("SELECT COUNT(*) n FROM kategori"), ''],
@@ -20,8 +17,7 @@ $kartu = [
   ['Total Denda',      rp(hitung("SELECT COALESCE(SUM(jumlah_denda),0) n FROM pengembalian")), 'red'],
 ];
 
-$terbaru = all("SELECT p.*, a.nama_anggota FROM peminjaman p
-                JOIN anggota a ON a.NIM = p.NIM ORDER BY p.no_peminjaman DESC LIMIT 5");
+$terbaru = all("SELECT p.*, a.nama_anggota FROM peminjaman p JOIN anggota a ON a.NIM = p.NIM ORDER BY p.no_peminjaman ASC");
 ?>
 
 <div class="head"><h1>Dashboard</h1></div>

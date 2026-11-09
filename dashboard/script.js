@@ -1,12 +1,8 @@
-// SCRIPT: JavaScript sederhana yang dipakai semua halaman.
-
-// 1. Konfirmasi sebelum menghapus (tombol dengan atribut data-confirm)
 document.addEventListener('click', function (e) {
   var tombol = e.target.closest('[data-confirm]');
   if (tombol && !confirm(tombol.dataset.confirm)) e.preventDefault();
 });
 
-// 2. Kotak pencarian untuk tabel (input dengan id="cari")
 var cari = document.getElementById('cari');
 if (cari) {
   cari.addEventListener('input', function () {
@@ -16,8 +12,6 @@ if (cari) {
     });
   });
 }
-
-// 3. Form peminjaman: batas kembali otomatis = tgl pinjam + 7 hari
 var tglPinjam = document.getElementById('tgl_peminjaman');
 var batas = document.getElementById('batas_pengembalian');
 if (tglPinjam && batas) {
@@ -28,7 +22,6 @@ if (tglPinjam && batas) {
   });
 }
 
-// 4. Form pengembalian: tampilkan perkiraan denda
 var form = document.getElementById('form-kembali');
 if (form) {
   var pilihPinjam = form.querySelector('[name=no_peminjaman]');
